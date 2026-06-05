@@ -51,7 +51,7 @@ docker compose exec backend php artisan db:seed
 ```
 
 Isso popula 5 produtos com estoques e custos variados, incluindo **Camiseta básica
-com custo médio 35** — o estado exato do cenário do enunciado, pronto pra demonstrar
+com custo médio 35**, o estado exato do cenário do enunciado, pronto pra demonstrar
 uma venda de 5un a R$80 retornando lucro de R$225. Também inclui um produto **sem
 estoque** (Boné esportivo), que aparece desabilitado no select de vendas.
 
@@ -156,7 +156,7 @@ lucro_venda = soma dos lucro_item
 ### Cancelamento de venda
 
 Cancelamento simplesmente **repõe a quantidade** no estoque e marca a venda com
-status `CANCELADA`. O custo médio **não é recalculado** — é uma decisão deliberada
+status `CANCELADA`. O custo médio **não é recalculado**, é uma decisão deliberada
 para preservar a legibilidade histórica em troca de uma imprecisão mínima.
 
 ### Concorrência
