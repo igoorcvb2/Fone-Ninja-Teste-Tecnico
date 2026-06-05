@@ -3,6 +3,8 @@
 use App\Enums\StatusVenda;
 use App\Models\Produto;
 
+use function Pest\Laravel\{getJson, postJson};
+
 it('registra venda, baixa estoque e calcula lucro pelo custo médio', function () {
     // Cenário do enunciado: custo médio 35, venda 5un a 80 -> lucro 225
     $produto = Produto::factory()->comEstoque(20, 35)->create();
@@ -16,8 +18,8 @@ it('registra venda, baixa estoque e calcula lucro pelo custo médio', function (
 
     $resposta->assertCreated()
         ->assertJsonPath('data.cliente', 'Fulano da Silva')
-        ->assertJsonPath('data.total', 400.0)
-        ->assertJsonPath('data.lucro', 225.0)
+        ->assertJsonPath('data.total', 400)
+        ->assertJsonPath('data.lucro', 225)
         ->assertJsonPath('data.status', StatusVenda::Concluida->value);
 
     expect($produto->fresh()->estoque)->toBe(15);
@@ -34,8 +36,8 @@ it('soma o lucro corretamente com múltiplos itens', function () {
             ['id' => $p2->id, 'quantidade' => 1, 'preco_unitario' => 100],
         ],
     ])->assertCreated()
-        ->assertJsonPath('data.total', 150.0)
-        ->assertJsonPath('data.lucro', 80.0);
+        ->assertJsonPath('data.total', 150)
+        ->assertJsonPath('data.lucro', 80);
 });
 
 it('rejeita venda quando estoque é insuficiente', function () {
@@ -87,7 +89,7 @@ it('não cancela venda já cancelada', function () {
     $produto = Produto::factory()->comEstoque(10, 5)->create();
 
     $venda = postJson('/api/vendas', [
-        'cliente' => 'Y',
+        'cliente' => 'Yan',
         'produtos' => [['id' => $produto->id, 'quantidade' => 1, 'preco_unitario' => 10]],
     ])->json('data');
 
@@ -102,12 +104,12 @@ it('lista vendas e filtra por status', function () {
     $produto = Produto::factory()->comEstoque(20, 5)->create();
 
     $v1 = postJson('/api/vendas', [
-        'cliente' => 'A',
+        'cliente' => 'Ana',
         'produtos' => [['id' => $produto->id, 'quantidade' => 1, 'preco_unitario' => 10]],
     ])->json('data');
 
     postJson('/api/vendas', [
-        'cliente' => 'B',
+        'cliente' => 'Beto',
         'produtos' => [['id' => $produto->id, 'quantidade' => 2, 'preco_unitario' => 10]],
     ])->assertCreated();
 

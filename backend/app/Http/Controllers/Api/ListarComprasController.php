@@ -14,6 +14,7 @@ class ListarComprasController extends Controller
         $compras = Compra::query()
             ->with(['itens.produto'])
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get();
 
         return CompraResource::collection($compras);

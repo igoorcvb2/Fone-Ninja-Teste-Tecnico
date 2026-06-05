@@ -2,6 +2,8 @@
 
 use App\Models\Produto;
 
+use function Pest\Laravel\{getJson, postJson};
+
 it('registra compra, entra com estoque e define custo médio inicial', function () {
     $produto = Produto::factory()->create(['preco_venda' => 80]);
 
@@ -14,7 +16,7 @@ it('registra compra, entra com estoque e define custo médio inicial', function 
 
     $resposta->assertCreated()
         ->assertJsonPath('data.fornecedor', 'Fornecedor X')
-        ->assertJsonPath('data.total', 300.0);
+        ->assertJsonPath('data.total', 300);
 
     expect($produto->fresh())
         ->estoque->toBe(10)
@@ -51,7 +53,7 @@ it('aceita múltiplos produtos numa mesma compra', function () {
             ['id' => $p2->id, 'quantidade' => 3, 'preco_unitario' => 20],
         ],
     ])->assertCreated()
-        ->assertJsonPath('data.total', 110.0);
+        ->assertJsonPath('data.total', 110);
 
     expect($p1->fresh()->estoque)->toBe(5)
         ->and($p2->fresh()->estoque)->toBe(3);

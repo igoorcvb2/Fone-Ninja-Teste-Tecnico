@@ -2,6 +2,8 @@
 
 use App\Models\Produto;
 
+use function Pest\Laravel\{getJson, postJson};
+
 it('cadastra um produto com nome e preço de venda', function () {
     $resposta = postJson('/api/produtos', [
         'nome' => 'Camiseta',
@@ -11,7 +13,7 @@ it('cadastra um produto com nome e preço de venda', function () {
     $resposta->assertCreated()
         ->assertJsonPath('data.nome', 'Camiseta')
         ->assertJsonPath('data.preco_venda', 79.90)
-        ->assertJsonPath('data.custo_medio', 0.0)
+        ->assertJsonPath('data.custo_medio', 0)
         ->assertJsonPath('data.estoque', 0);
 
     expect(Produto::count())->toBe(1);

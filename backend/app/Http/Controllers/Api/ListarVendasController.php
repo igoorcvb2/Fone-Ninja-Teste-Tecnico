@@ -20,6 +20,7 @@ class ListarVendasController extends Controller
                 fn ($q) => $q->where('status', StatusVenda::from(strtoupper($request->string('status')->value())))
             )
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get();
 
         return VendaResource::collection($vendas);
