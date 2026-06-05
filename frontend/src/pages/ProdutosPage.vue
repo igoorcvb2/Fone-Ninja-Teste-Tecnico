@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { Package } from 'lucide-vue-next'
 import { useProdutosStore } from '@/stores/produtos'
 import Button from '@/components/ui/Button.vue'
 import Modal from '@/components/ui/Modal.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import FormProduto from '@/components/produtos/FormProduto.vue'
 
 const produtos = useProdutosStore()
@@ -45,8 +47,16 @@ function formatarMoeda(valor: number) {
             <td colspan="4" class="px-4 py-8 text-center text-slate-400">Carregando…</td>
           </tr>
           <tr v-else-if="!produtos.lista.length">
-            <td colspan="4" class="px-4 py-12 text-center text-slate-400">
-              Nenhum produto cadastrado ainda. Use o botão acima para criar o primeiro.
+            <td colspan="4">
+              <EmptyState
+                :icon="Package"
+                titulo="Nenhum produto cadastrado"
+                descricao="Comece cadastrando seu primeiro produto. Ele entra no catálogo com estoque e custo zerados,vão ser atualizados a cada compra."
+              >
+                <template #acao>
+                  <Button @click="modalAberto = true">+ Cadastrar primeiro produto</Button>
+                </template>
+              </EmptyState>
             </td>
           </tr>
           <tr v-for="p in produtos.lista" :key="p.id" class="hover:bg-slate-50">

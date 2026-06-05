@@ -9,11 +9,15 @@ import {
   DialogClose,
 } from 'reka-ui'
 
-defineProps<{
-  open: boolean
-  titulo: string
-  descricao?: string
-}>()
+withDefaults(
+  defineProps<{
+    open: boolean
+    titulo: string
+    descricao?: string
+    tamanho?: 'md' | 'lg'
+  }>(),
+  { tamanho: 'md' },
+)
 
 defineEmits<{
   (e: 'update:open', valor: boolean): void
@@ -25,7 +29,10 @@ defineEmits<{
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40" />
       <DialogContent
-        class="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-xl focus:outline-none"
+        :class="[
+          'fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-xl focus:outline-none max-h-[90vh] overflow-y-auto',
+          tamanho === 'lg' ? 'max-w-3xl' : 'max-w-lg',
+        ]"
       >
         <header class="flex items-start justify-between border-b border-slate-200 p-5">
           <div>

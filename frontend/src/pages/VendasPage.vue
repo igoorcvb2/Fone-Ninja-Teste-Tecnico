@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { Receipt, Eye } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import Modal from '@/components/ui/Modal.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import FormVenda from '@/components/vendas/FormVenda.vue'
+import DetalheVenda from '@/components/vendas/DetalheVenda.vue'
 import { listarVendas, cancelarVenda } from '@/api/vendas'
 import { useProdutosStore } from '@/stores/produtos'
 import { useToast } from '@/composables/useToast'
@@ -13,6 +16,7 @@ const carregando = ref(false)
 const formAberto = ref(false)
 const cancelando = ref(false)
 const vendaParaCancelar = ref<Venda | null>(null)
+const vendaParaDetalhar = ref<Venda | null>(null)
 
 const produtos = useProdutosStore()
 const toast = useToast()
@@ -106,11 +110,24 @@ function formatarData(iso: string) {
             <td colspan="6" class="px-4 py-8 text-center text-slate-400">Carregando…</td>
           </tr>
           <tr v-else-if="!vendas.length">
-            <td colspan="6" class="px-4 py-12 text-center text-slate-400">
-              Nenhuma venda registrada.
+            <td colspan="6">
+              <EmptyState
+                :icon="Receipt"
+                titulo="Nenhuma venda registrada"
+                descricao="Registre uma venda pra ver o lucro calculado em cima do custo médio atual dos produtos."
+              >
+                <template #acao>
+                  <Button @click="formAberto = true">+ Registrar primeira venda</Button>
+                </template>
+              </EmptyState>
             </td>
           </tr>
-          <tr v-for="v in vendas" :key="v.id" class="hover:bg-slate-50">
+          <tr
+            v-for="v in vendas"
+            :key="v.id"
+            class="hover:bg-slate-50 cursor-pointer transition"
+            @click="vendaParaDetalhar = v"
+          >
             <td class="px-4 py-3 text-slate-600 tabular-nums">{{ formatarData(v.created_at) }}</td>
             <td class="px-4 py-3 font-medium text-slate-900">{{ v.cliente }}</td>
             <td class="px-4 py-3">
@@ -141,14 +158,23 @@ function formatarData(iso: string) {
                 {{ formatarMoeda(v.lucro) }}
               </span>
             </td>
-            <td class="px-4 py-3 text-right">
-              <Button
-                v-if="v.status === 'CONCLUIDA'"
-                variante="ghost"
-                @click="vendaParaCancelar = v"
-              >
-                Cancelar
-              </Button>
+            <td class="px-4 py-3 text-right" @click.stop>
+              <div class="flex items-center justify-end gap-1">
+                <button
+                  class="p-1.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  aria-label="Ver detalhes"
+                  @click="vendaParaDetalhar = v"
+                >
+                  <Eye class="w-4 h-4" />
+                </button>
+                <Button
+                  v-if="v.status === 'CONCLUIDA'"
+                  variante="ghost"
+                  @click="vendaParaCancelar = v"
+                >
+                  Cancelar
+                </Button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -177,6 +203,15 @@ function formatarData(iso: string) {
           Cancelar venda
         </Button>
       </template>
+    </Modal>
+
+    <Modal
+      :open="vendaParaDetalhar !== null"
+      :titulo="vendaParaDetalhar ? `Venda #${vendaParaDetalhar.id}` : ''"
+      tamanho="lg"
+      @update:open="(v) => !v && (vendaParaDetalhar = null)"
+    >
+      <DetalheVenda v-if="vendaParaDetalhar" :venda="vendaParaDetalhar" />
     </Modal>
   </section>
 </template>

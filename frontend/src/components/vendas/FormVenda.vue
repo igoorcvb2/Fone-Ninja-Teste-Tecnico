@@ -83,6 +83,17 @@ function lucroLinha(it: ItemLinha): number | null {
   return (p - produto.custo_medio) * q
 }
 
+function excedeEstoque(it: ItemLinha): boolean {
+  const produto = produtos.porId.get(Number(it.produto_id))
+  if (!produto) return false
+  const q = Number(it.quantidade) || 0
+  return q > produto.estoque
+}
+
+const algumaLinhaInvalida = computed(() =>
+  itens.some((it) => excedeEstoque(it)),
+)
+
 function adicionarItem() {
   itens.push(novaLinha())
 }
@@ -187,7 +198,12 @@ async function submeter() {
         <div
           v-for="(item, idx) in itens"
           :key="item._id"
-          class="border border-slate-200 rounded-md p-3 bg-slate-50/50"
+          :class="[
+            'border rounded-md p-3',
+            excedeEstoque(item)
+              ? 'border-red-300 bg-red-50/40'
+              : 'border-slate-200 bg-slate-50/50',
+          ]"
         >
           <div class="grid grid-cols-12 gap-2 items-start">
             <div class="col-span-6">
@@ -229,11 +245,17 @@ async function submeter() {
 
           <p
             v-if="infoProduto(item.produto_id)"
-            class="mt-2 text-xs text-slate-500 tabular-nums flex flex-wrap gap-x-4"
+            class="mt-2 text-xs tabular-nums flex flex-wrap gap-x-4"
+            :class="excedeEstoque(item) ? 'text-red-600' : 'text-slate-500'"
           >
             <span>
               Estoque:
-              <span class="font-medium text-slate-700">{{ infoProduto(item.produto_id)?.estoque }}</span>
+              <span
+                class="font-medium"
+                :class="excedeEstoque(item) ? 'text-red-700' : 'text-slate-700'"
+              >
+                {{ infoProduto(item.produto_id)?.estoque }}
+              </span>
             </span>
             <span>
               Custo médio:
@@ -241,7 +263,7 @@ async function submeter() {
                 {{ formatarMoeda(infoProduto(item.produto_id)?.custo ?? 0) }}
               </span>
             </span>
-            <span v-if="lucroLinha(item) !== null">
+            <span v-if="lucroLinha(item) !== null && !excedeEstoque(item)">
               Lucro estimado:
               <span
                 class="font-medium"
@@ -249,6 +271,9 @@ async function submeter() {
               >
                 {{ formatarMoeda(lucroLinha(item) ?? 0) }}
               </span>
+            </span>
+            <span v-if="excedeEstoque(item)" class="font-medium">
+              Quantidade excede o estoque disponível.
             </span>
           </p>
         </div>
@@ -266,10 +291,14 @@ async function submeter() {
         <div>
           <p class="text-slate-500">Lucro estimado</p>
           <p
+            v-if="!algumaLinhaInvalida"
             class="text-lg font-semibold tabular-nums"
             :class="lucroEstimado >= 0 ? 'text-emerald-700' : 'text-red-600'"
           >
             {{ formatarMoeda(lucroEstimado) }}
+          </p>
+          <p v-else class="text-sm text-red-600">
+            Ajuste os itens com estoque insuficiente.
           </p>
         </div>
       </div>
@@ -277,7 +306,12 @@ async function submeter() {
         <Button variante="secondary" type="button" @click="emit('cancelar')">
           Cancelar
         </Button>
-        <Button variante="primary" type="submit" :loading="enviando">
+        <Button
+          variante="primary"
+          type="submit"
+          :loading="enviando"
+          :disabled="algumaLinhaInvalida"
+        >
           Registrar venda
         </Button>
       </div>

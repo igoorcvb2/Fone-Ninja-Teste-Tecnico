@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { ShoppingCart } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import FormCompra from '@/components/compras/FormCompra.vue'
 import { listarCompras } from '@/api/compras'
 import type { Compra } from '@/types/compra'
@@ -81,8 +83,16 @@ async function aoRegistrar() {
             <td colspan="4" class="px-4 py-8 text-center text-slate-400">Carregando…</td>
           </tr>
           <tr v-else-if="!compras.length">
-            <td colspan="4" class="px-4 py-12 text-center text-slate-400">
-              Ainda não há compras registradas.
+            <td colspan="4">
+              <EmptyState
+                :icon="ShoppingCart"
+                titulo="Nenhuma compra registrada"
+                descricao="Toda compra registrada entra no estoque dos produtos e recalcula o custo médio ponderado."
+              >
+                <template #acao>
+                  <Button @click="formAberto = true">+ Registrar primeira compra</Button>
+                </template>
+              </EmptyState>
             </td>
           </tr>
           <tr v-for="c in compras" :key="c.id" class="hover:bg-slate-50">
