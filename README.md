@@ -41,6 +41,26 @@ serviços estiverem prontos:
 - API: <http://localhost:8000/api>
 - MySQL: `localhost:3306` (usuário `erp`, senha `erp`, bancos `erp` e `erp_test`)
 
+### Dados de exemplo (seed)
+
+Pra não precisar cadastrar produto + compras na mão antes de testar o fluxo de venda,
+rode o seeder:
+
+```bash
+docker compose exec backend php artisan db:seed
+```
+
+Isso popula 5 produtos com estoques e custos variados, incluindo **Camiseta básica
+com custo médio 35** — o estado exato do cenário do enunciado, pronto pra demonstrar
+uma venda de 5un a R$80 retornando lucro de R$225. Também inclui um produto **sem
+estoque** (Boné esportivo), que aparece desabilitado no select de vendas.
+
+Pra zerar tudo e popular de novo:
+
+```bash
+docker compose exec backend php artisan migrate:fresh --seed --force
+```
+
 ### Sem Docker
 
 Se preferir rodar local sem container, precisa ter PHP 8.3, MySQL e Node 20:
