@@ -171,5 +171,6 @@ Os testes rodam contra o banco `erp_test` (separado do banco de desenvolvimento)
   para o front exibir mensagens específicas.
 
 
-  <img width="1512" height="982" alt="image" src="https://github.com/user-attachments/assets/cb9dd57a-51ba-4ee4-ae6c-fec4e729ccd4" />
+<img width="1512" height="982" alt="image" src="https://github.com/user-attachments/assets/ab8b9b96-9aa6-4c5e-a0fa-27bf97ccd188" />
+
 
