@@ -169,3 +169,7 @@ Os testes rodam contra o banco `erp_test` (separado do banco de desenvolvimento)
 - As validações Laravel retornam status 422 com `{message, errors}`. A exception
   `EstoqueInsuficienteException` retorna 422 com `{erro, produto_id, disponivel, solicitado}`
   para o front exibir mensagens específicas.
+
+
+  <img width="1512" height="982" alt="image" src="https://github.com/user-attachments/assets/cb9dd57a-51ba-4ee4-ae6c-fec4e729ccd4" />
+
